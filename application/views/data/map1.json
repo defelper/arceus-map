@@ -1,19 +1,19 @@
 {
   "pokemons": {
 	"1" : {
-	  "x": 200,
-	  "y": 150,
-	  "name": "Alakazam"
+	  "x": 158,
+	  "y": 140,
+	  "name": "Luxio"
 	},
 	"2" : {
-	  "x": 350,
-	  "y": 90,
-	  "name": "Gengar"
+	  "x": 685,
+	  "y": 29,
+	  "name": "Rapidash"
 	},
 	"3" : {
-	  "x": 450,
-	  "y": 100,
-	  "name": "Rapidash"
+	  "x": 905,
+	  "y": 44,
+	  "name": "Heracross"
 	}
   }
 }
