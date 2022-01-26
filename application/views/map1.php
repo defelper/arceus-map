@@ -12,7 +12,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 
-	<link rel="stylesheet" type="text/css" href="assets/css/tooltipster.bundle.css" />
+	<link rel="stylesheet" type="text/css" href="<?php echo base_url('assets/css/tooltipster.bundle.css'); ?>" />
 
 	<style type="text/css">
 
@@ -47,11 +47,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		</header>
 
 		<div class="row">
+			<div class="col-2">
+				<div>
+					<button id="add" type="button" class="btn btn-primary">Add point</button>
+				</div>
+				<label id="X">100</label>
+				<label id="Y">200</label>
+			</div>
 			<div class="col">
 				<div class="text-center" style="position: relative; ">
-					<a href="/map/loadmap/1">
-						<img id="map1" src="<?php echo base_url('assets/images/map1-small.jpg'); ?>" class="rounded" alt="Mapa 1" width="20%">
-					</a>
+					<img id="map" src="<?php echo base_url('assets/images/Map1.jpg'); ?>" class="rounded" alt="Mapa 1" width="100%">
 				</div>
 			</div>
 		</div>
@@ -64,8 +69,81 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 
-<script type="text/javascript" src="assets/js/tooltipster.bundle.js"></script>
+<script type="text/javascript" src="<?php echo base_url('assets/js/tooltipster.bundle.js'); ?>"></script>
 
 
+<script>
+	var edit = false;
+
+	$( document ).ready(function() {
+		$('#map').on('mousemove', function(e) { console.log($('#map').outerWidth()+ ' ' + $('#map').outerHeight());
+			$('#X').text(e.offsetX);
+			$('#Y').text(e.offsetY);
+		});
+
+		$('#add').on('click', function() {
+			edit = !edit;
+
+			if (edit) {
+				$('body').addClass('custom-cursor');console.log('entrou');
+			} else {
+				$('body').removeClass('custom-cursor');
+			}
+		});
+
+		$('#map').on('click', function(e) {
+			if (edit) {
+				$('body').removeClass('custom-cursor');
+
+				var wrapper = $(this).parent();
+				var parentOffset = $(this).offset();
+				var relX = e.offsetX/$(this).width()*100;
+				var relY = e.offsetY/$(this).height()*100;
+
+				console.log(relX, relY);
+				criarPin(wrapper, relX, relY);
+
+				edit = false;
+			}
+		});
+
+		function criarPin(wrapper, x, y, data) {
+			var pin = $('<img>');
+			pin.attr('src', '<?php echo base_url('assets/images/pin2.png') ?>');
+			pin.attr('id', data.id);
+			pin.attr('title', data.name);
+			pin.tooltipster();
+			$(wrapper).append(pin.css({
+				position: 'absolute',
+				left: x+'%',
+				top: y+'%',
+				display: 'none'
+			}));
+			pin.fadeIn('slow');
+		}
+
+		function loadPins(idMap) {
+			$.ajax({
+				type: 'POST',
+				url: '<?= base_url('map/getpins'); ?>',
+				data:{ map: idMap},
+				success: function(data) {
+					var map = $('#map');
+					var wrapper = map.parent();
+					console.log(data);
+					$.each(data.pokemons,function(index, value){
+						var relX = value.x/map.width()*100;
+						var relY = value.y/map.height()*100;
+
+						criarPin(wrapper, relX, relY, value);
+					});
+				}
+			});
+		}
+
+		loadPins(1);
+
+	});
+</script>
 </body>
 </html>
